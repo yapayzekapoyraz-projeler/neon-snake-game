@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Snake - Modern Yılan Oyunu</title>
+    <meta name="description" content="Supabase bağlantılı, neon tasarımlı ve deri mağazalı modern yılan oyunu.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- CSS Dosyası -->
+    <link rel="stylesheet" href="index.css">
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="stars"></div>
+    <div id="stars2"></div>
+
+    <div class="app-container">
+        
+        <!-- 1. Giriş / İsim Belirleme Ekranı -->
+        <div id="auth-screen" class="screen glass active">
+            <h1 class="neon-text">NEON SNAKE</h1>
+            <p class="subtitle">Supabase ile Güçlendirilmiş Modern Yılan Oyunu</p>
+            
+            <div class="input-group">
+                <input type="text" id="username-input" placeholder="Oyuncu Adı Girin..." maxlength="15">
+                <button id="btn-login" class="btn btn-primary neon-btn">Oyuna Giriş Yap</button>
+                <button id="btn-open-settings" class="btn btn-secondary" style="font-size: 0.9rem; margin-top: 5px;">⚙️ Supabase Bağlantısı</button>
+            </div>
+            <p id="auth-error" class="error-text"></p>
+        </div>
+
+        <!-- 2. Ana Menü Ekranı -->
+        <div id="menu-screen" class="screen glass hidden">
+            <h1 class="neon-text-small">NEON SNAKE</h1>
+            <div class="player-info-card">
+                <span class="welcome-text">Hoş geldin, <strong id="menu-username">...</strong></span>
+                <span class="points-text">Toplam Bakiye: <strong id="menu-points" class="yellow-text">0</strong> Puan</span>
+            </div>
+
+            <div class="menu-options">
+                <!-- Zorluk Seçimi -->
+                <div class="setting-group">
+                    <label>Zorluk Derecesi</label>
+                    <div class="difficulty-select">
+                        <button class="btn btn-diff active" data-speed="150">Kolay</button>
+                        <button class="btn btn-diff" data-speed="100">Orta</button>
+                        <button class="btn btn-diff" data-speed="60">Zor</button>
+                    </div>
+                </div>
+
+                <!-- Oyun Modu Seçimi -->
+                <div class="setting-group">
+                    <label>Oyun Modu</label>
+                    <div class="mode-select">
+                        <button class="btn btn-mode active" data-mode="classic">Klasik (Duvar Yok)</button>
+                        <button class="btn btn-mode" data-mode="walls">Duvarlı (Zor)</button>
+                    </div>
+                </div>
+
+                <!-- Menü Butonları -->
+                <button id="btn-start-game" class="btn btn-primary btn-large neon-btn-green">Oyunu Başlat</button>
+                <div class="menu-row">
+                    <button id="btn-open-shop" class="btn btn-secondary">Deri (Skin) Mağazası</button>
+                    <button id="btn-open-leaderboard" class="btn btn-secondary">Liderlik Tablosu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Oyun Ekranı -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-header glass">
+                <div class="header-item">
+                    <span>Skor:</span>
+                    <strong id="current-score" class="green-text">0</strong>
+                </div>
+                <div class="header-item">
+                    <span>Aktif Deri:</span>
+                    <strong id="game-active-skin" class="cyan-text">Klasik</strong>
+                </div>
+                <div class="header-controls">
+                    <button id="btn-mute" class="btn btn-icon">🔊</button>
+                    <button id="btn-pause" class="btn btn-icon">⏸</button>
+                    <button id="btn-quit" class="btn btn-danger">Çık</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="game-canvas" width="400" height="400"></canvas>
+            </div>
+
+            <!-- Mobil Kontroller -->
+            <div class="mobile-controls">
+                <button id="ctrl-up" class="ctrl-btn">▲</button>
+                <div class="ctrl-row">
+                    <button id="ctrl-left" class="ctrl-btn">◀</button>
+                    <button id="ctrl-down" class="ctrl-btn">▼</button>
+                    <button id="ctrl-right" class="ctrl-btn">▶</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Deri (Skin) Mağazası Ekranı -->
+        <div id="shop-screen" class="screen glass hidden">
+            <h2 class="neon-text-cyan">DERİ MAĞAZASI</h2>
+            <div class="shop-header">
+                <span>Mevcut Bakiyeniz: <strong id="shop-points" class="yellow-text">0</strong> Puan</span>
+                <button id="btn-close-shop" class="btn btn-close">Kapat</button>
+            </div>
+
+            <div class="shop-grid" id="skins-container">
+                <!-- Skin Kartı Şablonu (JS ile dinamik doldurulacak) -->
+            </div>
+        </div>
+
+        <!-- 5. Liderlik Tablosu Ekranı -->
+        <div id="leaderboard-screen" class="screen glass hidden">
+            <h2 class="neon-text-yellow">LİDERLİK TABLOSU</h2>
+            <p class="leaderboard-note">İlk 3 dereceye giren oyuncular her oyun sonunda ekstra puan kazanır!</p>
+            
+            <div class="leaderboard-container">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Sıra</th>
+                            <th>Oyuncu Adı</th>
+                            <th>Skor</th>
+                            <th>Ödül Puanı</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- JS ile doldurulacak -->
+                    </tbody>
+                </table>
+            </div>
+
+            <button id="btn-close-leaderboard" class="btn btn-secondary btn-full">Menüye Dön</button>
+        </div>
+
+        <!-- 6. Oyun Bitti (Game Over) Ekranı -->
+        <div id="game-over-screen" class="screen glass hidden">
+            <h2 class="neon-text-red">OYUN BİTTİ</h2>
+            
+            <div class="game-summary">
+                <p>Yaptığınız Skor: <strong id="summary-score" class="green-text">0</strong></p>
+                <p>Kazanılan Puan: <strong id="summary-earned" class="yellow-text">0</strong></p>
+                
+                <!-- Derece Bonus Kartı (Eğer ilk 3'e girdiyse gösterilecek) -->
+                <div id="bonus-card" class="bonus-alert hidden">
+                    <span class="bonus-crown">👑</span>
+                    <p id="bonus-message">Tebrikler! Liderlik tablosunda derece yaptınız. <br><strong>+0 Bonus Puan</strong> eklendi!</p>
+                </div>
+                
+                <p class="total-points-message">Yeni Toplam Puanınız: <strong id="summary-total-points">0</strong></p>
+            </div>
+
+            <div class="game-over-actions">
+                <button id="btn-restart" class="btn btn-primary neon-btn-green">Tekrar Oyna</button>
+                <button id="btn-game-over-menu" class="btn btn-secondary">Ana Menüye Dön</button>
+            </div>
+        </div>
+
+        <!-- 7. Supabase Ayarları Ekranı -->
+        <div id="settings-screen" class="screen glass hidden">
+            <h2 class="neon-text-cyan" style="font-size: 1.6rem; margin-bottom: 8px;">SUPABASE AYARLARI</h2>
+            <p class="subtitle" style="margin-bottom: 20px;">Supabase bilgilerinizi girerek liderlik tablosunu ve puanlarınızı bulutta saklayın.</p>
+            
+            <div class="input-group" style="gap: 12px;">
+                <input type="text" id="setting-url-input" placeholder="Supabase Project URL (https://...)" style="text-align: left; font-size: 0.9rem; padding: 12px 16px;">
+                <input type="text" id="setting-key-input" placeholder="Supabase Anon Key (eyJhbGciOi...)" style="text-align: left; font-size: 0.9rem; padding: 12px 16px;">
+                <button id="btn-save-settings" class="btn btn-primary neon-btn" style="margin-top: 10px;">Bağlantıyı Kaydet</button>
+                <button id="btn-close-settings" class="btn btn-secondary">İptal / Geri Dön</button>
+            </div>
+            <p id="settings-status" class="error-text" style="color: var(--neon-green); margin-top: 10px;"></p>
+        </div>
+
+    </div>
+
+    <!-- Scriptler -->
+    <script src="supabase-client.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
