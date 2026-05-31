@@ -4,8 +4,8 @@
 // NOT: Supabase URL ve Anon Key değerlerinizi buraya yazabilirsiniz.
 // Alternatif olarak, tarayıcıda yerel test yaparken localStorage'dan da okunabilir.
 // -------------------------------------------------------------------------
-const SUPABASE_URL = "https://your-project.supabase.co"; // Kendi Supabase URL'nizle değiştirin
-const SUPABASE_ANON_KEY = "sb_secret_" + "jiKdaoNhUpCdgeca7CcW4A_kX0JSl0f"; // Kullanıcının sağladığı API anahtarı
+const SUPABASE_URL = "https://oguulmjusopukyptmqyt.supabase.co"; // Kendi Supabase URL'niz
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ndXVsbWp1c29wdWt5cHRtcXl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAyNDg3NTYsImV4cCI6MjA5NTgyNDc1Nn0.QykwiCbV8KahsCmBYjGExB4sng8cSVE0Gg_TGytaylE"; // Kullanıcının sağladığı Anon/Publishable Key
 
 // LocalStorage Yedekleri (Geliştirme aşamasında kolaylık sağlamak için)
 const getDbUrl = () => localStorage.getItem("supabase_url") || SUPABASE_URL;
