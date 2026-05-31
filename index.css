@@ -1,0 +1,737 @@
+/* CSS Tasarım Sistemi - Neon Snake Game */
+
+:root {
+    --bg-dark: #090d16;
+    --card-bg: rgba(15, 23, 42, 0.5);
+    --border-color: rgba(255, 255, 255, 0.08);
+    
+    --neon-green: #22c55e;
+    --neon-green-glow: rgba(34, 197, 94, 0.4);
+    
+    --neon-red: #ef4444;
+    --neon-red-glow: rgba(239, 68, 68, 0.4);
+    
+    --neon-cyan: #06b6d4;
+    --neon-cyan-glow: rgba(6, 182, 212, 0.4);
+    
+    --neon-yellow: #eab308;
+    --neon-yellow-glow: rgba(234, 179, 8, 0.4);
+
+    --neon-pink: #ec4899;
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Yıldız Arka Planı */
+#stars, #stars2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+#stars {
+    background: radial-gradient(1.5px 1.5px at 20px 30px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 50px 160px, #ddd, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0.3;
+    animation: backgroundScroll 100s linear infinite;
+}
+
+#stars2 {
+    background: radial-gradient(1px 1px at 30px 10px, #fff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 150px 80px, #eee, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 250px 120px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 300px 300px;
+    opacity: 0.2;
+    animation: backgroundScroll 180s linear infinite;
+}
+
+@keyframes backgroundScroll {
+    from { background-position: 0 0; }
+    to { background-position: 0 -1000px; }
+}
+
+/* Ana Konteyner */
+.app-container {
+    width: 100%;
+    max-width: 480px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+
+/* Glassmorphism Panel Tasarımı */
+.glass {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+    border-radius: 24px;
+}
+
+.screen {
+    width: 100%;
+    padding: 30px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(1);
+    opacity: 1;
+}
+
+.screen.hidden {
+    display: none !important;
+    transform: scale(0.95);
+    opacity: 0;
+}
+
+/* Başlıklar & Neon Yazılar */
+h1.neon-text {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #fff;
+    text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow), 0 0 40px var(--neon-green-glow);
+    margin-bottom: 8px;
+    animation: flicker 4s infinite alternate;
+}
+
+h1.neon-text-small {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 8px var(--neon-green-glow), 0 0 16px var(--neon-green-glow);
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.neon-text-cyan {
+    color: #fff;
+    text-shadow: 0 0 10px var(--neon-cyan-glow), 0 0 20px var(--neon-cyan-glow);
+}
+
+.neon-text-yellow {
+    color: #fff;
+    text-shadow: 0 0 10px var(--neon-yellow-glow), 0 0 20px var(--neon-yellow-glow);
+}
+
+.neon-text-red {
+    color: #fff;
+    text-shadow: 0 0 10px var(--neon-red-glow), 0 0 20px var(--neon-red-glow);
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 30px;
+}
+
+/* Input ve Giriş Elemanları */
+.input-group {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+input[type="text"]:focus {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 10px var(--neon-green-glow);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* Buton Tasarımları */
+.btn {
+    padding: 14px 24px;
+    border-radius: 14px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    outline: none;
+}
+
+.btn-primary {
+    background: var(--text-primary);
+    color: var(--bg-dark);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.btn-large {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.1rem;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.btn-danger {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--neon-red);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+    background: var(--neon-red);
+    color: #fff;
+    box-shadow: 0 0 15px var(--neon-red-glow);
+}
+
+/* Neon Buton Parıltıları */
+.neon-btn {
+    background: var(--neon-green);
+    color: var(--bg-dark);
+    font-weight: 700;
+}
+
+.neon-btn:hover {
+    box-shadow: 0 0 20px var(--neon-green-glow);
+    transform: translateY(-2px);
+}
+
+.neon-btn-green {
+    background: var(--neon-green);
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    font-weight: 700;
+}
+
+.neon-btn-green:hover {
+    box-shadow: 0 0 25px var(--neon-green-glow);
+    transform: translateY(-2px);
+}
+
+.btn-close {
+    padding: 8px 16px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--neon-red);
+    font-size: 0.9rem;
+}
+
+.btn-close:hover {
+    background: var(--neon-red);
+    color: #fff;
+}
+
+/* Ayarlar Grubu & Menü */
+.player-info-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    border-radius: 16px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+}
+
+.menu-options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+}
+
+.setting-group label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.difficulty-select, .mode-select {
+    display: flex;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.btn-diff, .btn-mode {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.9rem;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 8px;
+}
+
+.btn-diff.active, .btn-mode.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    border: 1px solid var(--border-color);
+}
+
+.menu-row {
+    display: flex;
+    width: 100%;
+    gap: 12px;
+}
+
+.menu-row .btn {
+    flex: 1;
+}
+
+/* Renk Sınıfları */
+.green-text { color: var(--neon-green); }
+.yellow-text { color: var(--neon-yellow); }
+.cyan-text { color: var(--neon-cyan); }
+.red-text { color: var(--neon-red); }
+.error-text {
+    color: var(--neon-red);
+    font-size: 0.85rem;
+    min-height: 20px;
+    margin-top: 5px;
+}
+
+/* 3. Oyun Ekranı */
+.game-header {
+    width: 100%;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+
+.header-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.header-item strong {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.header-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icon {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    font-size: 1.1rem;
+    border: 1px solid var(--border-color);
+}
+
+.btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.canvas-container {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--border-color);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Canvas Border Neon Parlama (Klasik/Moduna göre app.js yönetecek) */
+#game-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+}
+
+/* Mobil Kontroller */
+.mobile-controls {
+    display: none; /* Varsayılan gizli, mobilde görünecek */
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.ctrl-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ctrl-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(0.92);
+}
+
+.ctrl-row {
+    display: flex;
+    gap: 40px;
+}
+
+/* 4. Deri (Skin) Mağazası */
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 20px;
+}
+
+.shop-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-height: 380px;
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+/* Custom scrollbar for shop */
+.shop-grid::-webkit-scrollbar, .leaderboard-container::-webkit-scrollbar {
+    width: 6px;
+}
+.shop-grid::-webkit-scrollbar-thumb, .leaderboard-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.skin-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.skin-card:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.skin-card-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.skin-preview {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(255,255,255,0.1);
+}
+
+.skin-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.skin-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.skin-cost {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.btn-skin-action {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+}
+
+.btn-skin-action.buy {
+    background: var(--neon-yellow);
+    color: var(--bg-dark);
+    font-weight: 700;
+}
+.btn-skin-action.equip {
+    background: var(--neon-cyan);
+    color: #fff;
+}
+.btn-skin-action.active {
+    background: var(--neon-green);
+    color: #fff;
+    cursor: default;
+}
+
+/* 5. Liderlik Tablosu */
+.leaderboard-note {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+.leaderboard-container {
+    width: 100%;
+    max-height: 300px;
+    overflow-y: auto;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.leaderboard-table th, .leaderboard-table td {
+    padding: 12px 16px;
+    text-align: left;
+}
+
+.leaderboard-table th {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.leaderboard-table tr:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.leaderboard-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Birinci, İkinci, Üçüncü Rozet Tasarımları */
+.rank-badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: 0.85rem;
+}
+
+.rank-badge.rank-1 {
+    background: #eab308;
+    color: var(--bg-dark);
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+}
+.rank-badge.rank-2 {
+    background: #cbd5e1;
+    color: var(--bg-dark);
+    box-shadow: 0 0 10px rgba(203, 213, 225, 0.4);
+}
+.rank-badge.rank-3 {
+    background: #b45309;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(180, 83, 9, 0.4);
+}
+.rank-badge.rank-other {
+    color: var(--text-secondary);
+}
+
+/* 6. Oyun Bitti (Game Over) */
+.game-summary {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.game-summary p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.game-summary p strong {
+    font-size: 1.4rem;
+}
+
+.total-points-message {
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px;
+    margin-top: 6px;
+}
+
+/* Derece Bonus Alert Kartı */
+.bonus-alert {
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-align: left;
+    animation: pulse 2s infinite;
+}
+
+.bonus-crown {
+    font-size: 1.8rem;
+    text-shadow: 0 0 10px rgba(234, 179, 8, 0.6);
+}
+
+.bonus-alert p {
+    font-size: 0.9rem !important;
+    color: #fff !important;
+    line-height: 1.4;
+}
+
+.bonus-alert p strong {
+    font-size: 1.1rem !important;
+    color: var(--neon-yellow);
+}
+
+.game-over-actions {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Flicker Animasyonu */
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow: 0 0 10px var(--neon-green-glow), 0 0 20px var(--neon-green-glow), 0 0 40px var(--neon-green-glow);
+    }
+    20%, 24%, 55% {        
+        text-shadow: none;
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0.4); }
+    70% { transform: scale(1.02); box-shadow: 0 0 12px 6px rgba(234, 179, 8, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(234, 179, 8, 0); }
+}
+
+/* Media Queries */
+@media (max-width: 480px) {
+    .app-container {
+        padding: 10px;
+    }
+    .screen {
+        padding: 24px 16px;
+    }
+    .mobile-controls {
+        display: flex; /* Mobilde veya küçük ekranda kontrolleri göster */
+    }
+    h1.neon-text {
+        font-size: 2.2rem;
+    }
+}
